@@ -24,6 +24,7 @@ class Tile(val x: Int, val y: Int, private var isBomb: Boolean) {
     }
 
     internal fun reveal(): Boolean {
+        if(this.isBomb) throw BombHitException("Bomb Hit at (${this.x},${this.y})")
         if( this.isFlagged || this.isRevealed ) return false
         this.isRevealed = true
         return true
@@ -33,7 +34,10 @@ class Tile(val x: Int, val y: Int, private var isBomb: Boolean) {
         return if(this.isFlagged) {
             "F"
         } else if(this.isRevealed) {
-            this.number.toString()
+            if( this.isBomb )
+                "X"
+            else
+                this.number.toString()
         } else {
             "░"
         }

@@ -25,12 +25,12 @@ class TileRangeOverlap(val range1: TileRange, val range2: TileRange) {
     }
 
     fun hasMeaningfulOverlapFirst(): Boolean {
-        if( noOverlap1.size + range2.numberTile.number == range1.numberTile.number ) return true
+        if( noOverlap1.size - range2.numberTile.number == range1.numberTile.number - range1.getNumberOfAdjacentFlags() ) return true
         return false
     }
 
     fun hasMeaningfulOverlapSecond(): Boolean {
-        if( noOverlap2.size + range1.numberTile.number == range2.numberTile.number ) return true
+        if( noOverlap2.size - range1.numberTile.number == range2.numberTile.number - range2.getNumberOfAdjacentFlags() ) return true
         return false
     }
 

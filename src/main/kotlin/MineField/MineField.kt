@@ -84,7 +84,6 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
             var row = ""
             it.forEach {
                 row += it
-
             }
             row
         }

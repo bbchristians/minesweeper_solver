@@ -1,5 +1,6 @@
 package solver
 
+import MineField.BombHitException
 import MineField.Tile
 
 class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
@@ -11,17 +12,6 @@ class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
         return 0F
     }
 
-    fun getNumberOfPossibleTilesInOverlap(other: TileRange): Int {
-        return tiles.filter{
-            it in other.tiles
-        }.count { !it.isRevealed && !it.isFlagged }
-    }
-
-    fun overlaps(other: TileRange): Boolean {
-        this.tiles.forEach { thisTile -> other.tiles.forEach { if( it == thisTile ) return true } }
-        return false
-    }
-
     fun flagAllBombs() {
         this.tiles.forEach {
             it.flag()
@@ -29,13 +19,21 @@ class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
     }
 
     fun revealFreeIfPossible(): Boolean {
-        if( this.tiles.count { it.isFlagged } == this.numberTile.number ) {
+        if( getNumberOfAdjacentFlags() == this.numberTile.number ) {
             var revealedTile = false
             this.tiles.forEach {
-                revealedTile = revealedTile || it.reveal()
+                try {
+                    revealedTile = revealedTile || it.reveal()
+                } catch(e: BombHitException) {
+                    throw BombHitException(e.message + ": False tile flagged.")
+                }
             }
             return revealedTile
         }
         return false
+    }
+
+    fun getNumberOfAdjacentFlags(): Int {
+        return this.tiles.count { it.isFlagged }
     }
 }
