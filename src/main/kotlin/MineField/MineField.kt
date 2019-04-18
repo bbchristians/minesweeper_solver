@@ -1,6 +1,10 @@
 package MineField
 
+import java.util.*
+
 class MineField(val height: Int, val width: Int, val numBombs: Int) {
+
+    val random = Random(1231212324)
 
     var isInitialized = false
 
@@ -22,8 +26,33 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
         if( !isInitialized ) {
             isInitialized = true
             populateWithBombs(x, y)
+            getAdjacentTiles(x, y).forEach { tile ->
+                revealTile(tile.x, tile.y)
+            }
+        } else {
+            val tile = this.field[y][x]
+            if( tile.isRevealed ) return
+            tile.reveal()
+            if( tile.number == 0 ) {
+                getAdjacentTiles(x, y).forEach { tile ->
+                    revealTile(tile.x, tile.y)
+                }
+            }
         }
+    }
 
+    fun getAdjacentTiles(x: Int, y: Int): List<Tile> {
+        return ((Math.max(0, x-1) until (Math.min(this.width, x+2)))).flatMap { x ->
+            ((Math.max(0, y-1) until (Math.min(this.height, y+2)))).map { y ->
+                this.field[y][x]
+            }
+        }
+    }
+
+    fun getRevealedTiles(): List<Tile> {
+        return this.field.flatMap { row ->
+            row.filter { it.isRevealed }
+        }
     }
 
     private fun populateWithBombs(initialX: Int, initialY: Int) {
@@ -33,7 +62,7 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
         }.filter { 
             Math.abs(it.x - initialX) > 1 || Math.abs(it.y - initialY) > 1 
         }
-            .shuffled()
+            .shuffled(random)
             .subList(0, this.numBombs)
             .forEach(Tile::setIsBomb)
         // Add Numbers
@@ -54,13 +83,7 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
         return this.field.joinToString("\n") {
             var row = ""
             it.forEach {
-                row += if (it.isFlagged) {
-                    "F"
-                } else if (it.getIsBomb()) {
-                    "x"
-                } else {
-                    it.number
-                }
+                row += it
 
             }
             row
