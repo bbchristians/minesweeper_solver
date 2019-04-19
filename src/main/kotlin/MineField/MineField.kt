@@ -4,7 +4,12 @@ import java.util.*
 
 class MineField(val height: Int, val width: Int, val numBombs: Int) {
 
-    val random = Random(1231212324)
+    // Seeds:
+    // 1231212324 : one unreachable
+    // 1231812501 : 3 unreachable tiles, 2 are bombs
+    // 1232812501 : This one's hard...
+    // 1233812501 : All reachable, but very hard
+    val random = Random(1233812501)
 
     var isInitialized = false
 

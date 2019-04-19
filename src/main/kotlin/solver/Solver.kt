@@ -46,6 +46,7 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
                     }
                     if( bestGuessRange?.getBombPerc() == 0F ) continue
                     chanceToWin *= (bestGuessRange?.getBombPerc() ?: 1F)
+                    // We can cheat to reveal the bomb, so we record the chance of failure up until this point
                     bestGuessRange?.cheatRevealOneBomb()
                     actionMade = true
                 }
