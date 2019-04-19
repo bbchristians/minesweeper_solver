@@ -53,4 +53,13 @@ class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
             }
         }
     }
+
+    fun cheatRevealOneNoBomb() {
+        this.tiles.shuffled().forEach {
+            if( !it.getIsBomb() && !it.isRevealed ) {
+                it.revealInField()
+                return
+            }
+        }
+    }
 }
