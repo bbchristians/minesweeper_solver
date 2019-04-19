@@ -6,9 +6,9 @@ import MineField.Tile
 class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
 
     fun getBombPerc(): Float {
-        val adjacentUnrevealedTiles = tiles.count { !it.isRevealed && !it.isFlagged }.toFloat()
+        val adjacentUnrevealedTiles = this.getUnrevealedTiles().toFloat()
         if( adjacentUnrevealedTiles > 0 )
-            return (numberTile.number - tiles.count { it.isFlagged }) / adjacentUnrevealedTiles
+            return this.getRemainingBombCount() / adjacentUnrevealedTiles
         return 0F
     }
 
@@ -18,12 +18,24 @@ class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
         }
     }
 
+    fun getUnrevealedTiles(): Int {
+        return tiles.count { !it.isRevealed && !it.isFlagged }
+    }
+
+    fun getRemainingBombCount():Int {
+        return numberTile.number - this.getNumberOfAdjacentFlags()
+    }
+
+    fun getNumberOfAdjacentFlags(): Int {
+        return this.tiles.count { it.isFlagged }
+    }
+
     fun revealFreeIfPossible(): Boolean {
         if( getNumberOfAdjacentFlags() == this.numberTile.number ) {
             var revealedTile = false
             this.tiles.forEach {
                 try {
-                    revealedTile = revealedTile || it.reveal()
+                    revealedTile = revealedTile || it.revealInField()
                 } catch(e: BombHitException) {
                     throw BombHitException(e.message + ": False tile flagged.")
                 }
@@ -31,9 +43,5 @@ class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
             return revealedTile
         }
         return false
-    }
-
-    fun getNumberOfAdjacentFlags(): Int {
-        return this.tiles.count { it.isFlagged }
     }
 }

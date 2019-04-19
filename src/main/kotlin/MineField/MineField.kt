@@ -14,7 +14,7 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
         Array(
             this.width
         ) { x ->
-            Tile(x, y, false)
+            Tile(this, x, y, false)
         }
     }
 
@@ -22,22 +22,24 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
         this.field[y][x].flag()
     }
 
-    fun revealTile(x: Int, y: Int) {
+    fun revealTile(x: Int, y: Int): Boolean {
         if( !isInitialized ) {
             isInitialized = true
             populateWithBombs(x, y)
             getAdjacentTiles(x, y).forEach { tile ->
                 revealTile(tile.x, tile.y)
             }
+            return true
         } else {
             val tile = this.field[y][x]
-            if( tile.isRevealed ) return
-            tile.reveal()
+            if( tile.isRevealed ) return false
+            val revealed = tile.reveal()
             if( tile.number == 0 ) {
                 getAdjacentTiles(x, y).forEach { tile ->
                     revealTile(tile.x, tile.y)
                 }
             }
+            return revealed
         }
     }
 
@@ -53,6 +55,12 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
         return this.field.flatMap { row ->
             row.filter { it.isRevealed }
         }
+    }
+
+    fun getNumberOfFlags(): Int {
+        return this.field.flatMap {
+            it.asIterable()
+        }.count { it.isFlagged }
     }
 
     private fun populateWithBombs(initialX: Int, initialY: Int) {
@@ -80,12 +88,12 @@ class MineField(val height: Int, val width: Int, val numBombs: Int) {
     }
 
     override fun toString(): String {
-        return this.field.joinToString("\n") {
-            var row = ""
-            it.forEach {
+        return this.field.mapIndexed { index, arrayOfTiles ->
+            var row = "$index\t|"
+            arrayOfTiles.forEach {
                 row += it
             }
             row
-        }
+        }.joinToString("\n")
     }
 }

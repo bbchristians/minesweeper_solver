@@ -14,23 +14,23 @@ class TileRangeOverlap(val range1: TileRange, val range2: TileRange) {
 
     val noOverlap1 by lazy {
         range1.tiles.filter {
-            it !in this.overlap
+            it !in this.overlap && !it.isFlagged && !it.isRevealed
         }
     }
 
     val noOverlap2 by lazy {
         range2.tiles.filter {
-            it !in this.overlap
+            it !in this.overlap && !it.isFlagged && !it.isRevealed
         }
     }
 
     fun hasMeaningfulOverlapFirst(): Boolean {
-        if( noOverlap1.size - range2.numberTile.number == range1.numberTile.number - range1.getNumberOfAdjacentFlags() ) return true
+        if( noOverlap1.size + range2.numberTile.number == range1.numberTile.number - range1.getNumberOfAdjacentFlags() ) return true
         return false
     }
 
     fun hasMeaningfulOverlapSecond(): Boolean {
-        if( noOverlap2.size - range1.numberTile.number == range2.numberTile.number - range2.getNumberOfAdjacentFlags() ) return true
+        if( noOverlap2.size + range1.numberTile.number == range2.numberTile.number - range2.getNumberOfAdjacentFlags() ) return true
         return false
     }
 

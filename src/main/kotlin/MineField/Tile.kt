@@ -1,6 +1,6 @@
 package MineField
 
-class Tile(val x: Int, val y: Int, private var isBomb: Boolean) {
+class Tile(val mineField: MineField, val x: Int, val y: Int, private var isBomb: Boolean) {
 
     var isFlagged = false
     private set
@@ -23,9 +23,13 @@ class Tile(val x: Int, val y: Int, private var isBomb: Boolean) {
         return this.isBomb;
     }
 
+    fun revealInField(): Boolean {
+        return this.mineField.revealTile(this.x, this.y)
+    }
+
     internal fun reveal(): Boolean {
-        if(this.isBomb) throw BombHitException("Bomb Hit at (${this.x},${this.y})")
         if( this.isFlagged || this.isRevealed ) return false
+        if( this.isBomb ) throw BombHitException("Bomb Hit at (${this.x},${this.y})")
         this.isRevealed = true
         return true
     }

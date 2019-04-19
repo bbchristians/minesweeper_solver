@@ -16,6 +16,7 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
             try {
                 val tileRanges: MutableList<TileRange> = mutableListOf()
                 mineField.getRevealedTiles().forEach { tile ->
+                    if( tile.number == 0 ) return@forEach
                     val newRange = TileRange(tile, this.mineField.getAdjacentTiles(tile.x, tile.y))
                     if (newRange.getBombPerc() == 1F) {
                         newRange.flagAllBombs()
@@ -24,10 +25,12 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
                         tileRanges.forEach { existentRange ->
                             val overlap = TileRangeOverlap(existentRange, newRange)
                             if (overlap.hasMeaningfulOverlapFirst()) {
+                                println(overlap.hasMeaningfulOverlapFirst())
                                 overlap.flagNoOverlap1()
                                 println("Bombs Flagged")
                             }
                             if (overlap.hasMeaningfulOverlapSecond()) {
+                                println("stop")
                                 overlap.flagNoOverlap2()
                                 println("Bombs Flagged")
                             }
