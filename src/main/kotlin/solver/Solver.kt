@@ -33,12 +33,12 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
                                 overlap.flagNoOverlap2()
                                 actionMade = actionMade or overlap.revealNoOverlap1()
                             }
-//                            if (overlap.allInNoOverlap1AreBombs()) {
-//                                overlap.flagNoOverlap1()
-//                            }
-//                            if (overlap.allInNoOverlap2AreBombs()) {
-//                                overlap.flagNoOverlap2()
-//                            }
+                            if (overlap.allInNoOverlap1AreBombs()) {
+                                actionMade = actionMade or overlap.flagNoOverlap1()
+                            }
+                            if (overlap.allInNoOverlap2AreBombs()) {
+                                actionMade = actionMade or overlap.flagNoOverlap2()
+                            }
                             if (overlap.noneInNoOverlap1AreBombs()) {
                                 actionMade = actionMade or overlap.revealNoOverlap1()
                             }
@@ -60,9 +60,9 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
                         if( perc == 0F ) 1F else perc
                     }
                     if( bestGuessRange?.getBombPerc() == 0F ) continue
-                    println(this.mineField)
                     chanceToWin *= 1 - (bestGuessRange?.getBombPerc() ?: 0F)
-                    println("--win%=${chanceToWin*100}%--")
+//                    println(this.mineField)
+//                    println("--win%=${chanceToWin*100}%--")
                     // We can cheat to reveal the bomb, so we record the chance of failure up until this point
                     bestGuessRange?.cheatRevealOneNoBomb()
                     actionMade = true

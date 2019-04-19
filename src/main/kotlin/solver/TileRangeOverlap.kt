@@ -2,6 +2,7 @@ package solver
 
 import MineField.Tile
 import java.lang.Integer.max
+import java.lang.Integer.min
 
 class TileRangeOverlap(val range1: TileRange, val range2: TileRange) {
 
@@ -39,8 +40,12 @@ class TileRangeOverlap(val range1: TileRange, val range2: TileRange) {
         return max(range1.getRemainingBombCount() - noOverlap1.size, range2.getRemainingBombCount() - noOverlap2.size)
     }
 
+    fun getMaxNumberOfUnflaggedBombsInOverlap(): Int {
+        return min(min(range1.getRemainingBombCount(), range2.getRemainingBombCount()), overlap.size)
+    }
+
     fun allInNoOverlap1AreBombs(): Boolean {
-        return range1.getRemainingBombCount() - getNumberOfBombsRequiredInOverlap() == noOverlap1.size
+        return range1.getRemainingBombCount() - getMaxNumberOfUnflaggedBombsInOverlap() == noOverlap1.size
     }
 
     fun noneInNoOverlap1AreBombs(): Boolean {
@@ -48,19 +53,19 @@ class TileRangeOverlap(val range1: TileRange, val range2: TileRange) {
     }
 
     fun allInNoOverlap2AreBombs(): Boolean {
-        return range2.getRemainingBombCount() - getNumberOfBombsRequiredInOverlap() == noOverlap2.size
+        return range2.getRemainingBombCount() - getMaxNumberOfUnflaggedBombsInOverlap() == noOverlap2.size
     }
 
     fun noneInNoOverlap2AreBombs(): Boolean {
         return range2.getRemainingBombCount() == getNumberOfBombsRequiredInOverlap()
     }
 
-    fun flagNoOverlap1() {
-        noOverlap1.forEach ( Tile::flag )
+    fun flagNoOverlap1(): Boolean {
+        return noOverlap1.map ( Tile::flag ).contains(true)
     }
 
-    fun flagNoOverlap2() {
-        noOverlap2.forEach ( Tile::flag )
+    fun flagNoOverlap2(): Boolean {
+        return noOverlap2.map ( Tile::flag ).contains(true)
     }
 
     fun revealNoOverlap1(): Boolean {

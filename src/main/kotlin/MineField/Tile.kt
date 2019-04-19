@@ -14,9 +14,10 @@ class Tile(val mineField: MineField, val x: Int, val y: Int, private var isBomb:
         this.isBomb = true
     }
 
-    internal fun flag() {
-        if( this.isRevealed ) return
+    internal fun flag(): Boolean {
+        if( this.isRevealed ) return false
         this.isFlagged = true
+        return true
     }
 
     internal fun getIsBomb(): Boolean {
