@@ -9,8 +9,9 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
         mineField.revealTile(initialX, initialY)
     }
 
-    fun solve() {
+    fun solve(): Double {
         var actionMade: Boolean
+        var chanceToWin = 1.0
         do {
             actionMade = false
             try {
@@ -25,14 +26,10 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
                         tileRanges.forEach { existentRange ->
                             val overlap = TileRangeOverlap(existentRange, newRange)
                             if (overlap.hasMeaningfulOverlapFirst()) {
-                                println(overlap.hasMeaningfulOverlapFirst())
                                 overlap.flagNoOverlap1()
-                                println("Bombs Flagged")
                             }
                             if (overlap.hasMeaningfulOverlapSecond()) {
-                                println("stop")
                                 overlap.flagNoOverlap2()
-                                println("Bombs Flagged")
                             }
                         }
                         tileRanges.add(newRange)
@@ -42,11 +39,22 @@ class Solver(val mineField: MineField, initialX: Int, initialY: Int) {
                 tileRanges.forEach { range ->
                     actionMade = actionMade || range.revealFreeIfPossible()
                 }
+                // No guaranteed actions were possible, so we must guess
+                if( !actionMade ) {
+                    val bestGuessRange = tileRanges.maxBy { range ->
+                        range.getBombPerc()
+                    }
+                    if( bestGuessRange?.getBombPerc() == 0F ) continue
+                    chanceToWin *= (bestGuessRange?.getBombPerc() ?: 1F)
+                    bestGuessRange?.cheatRevealOneBomb()
+                    actionMade = true
+                }
             } catch (e: BombHitException) {
                 e.printStackTrace()
                 actionMade = false
             }
         } while(actionMade)
+        return chanceToWin
     }
 
 

@@ -44,4 +44,13 @@ class TileRange(val numberTile: Tile, val tiles: List<Tile>) {
         }
         return false
     }
+
+    fun cheatRevealOneBomb() {
+        this.tiles.shuffled().forEach {
+            if( it.getIsBomb() ) {
+                it.flag()
+                return
+            }
+        }
+    }
 }
